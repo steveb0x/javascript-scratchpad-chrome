@@ -160,7 +160,9 @@ for(var i = 0; i < bindings.length; i++) {
 CodeMirror.commands.help = function() {
 	editor.openDialog(helpDialog);
 };
-CodeMirror.commands.save = save;
+CodeMirror.commands.save = function() {
+	save(false);
+};
 CodeMirror.commands.saveAs = function() {
 	save(true);
 };
@@ -307,23 +309,3 @@ createButton('button_close.png', 'button_close_hover.png', function() {
 		}]);
 	}
 });
-
-
-/*document.getElementById('save').addEventListener('mousedown', function() {
-	
-	/*if(!fs) {
-		window.requestFileSystem(window.PERSISTENT, 1024*1024*1024, function(filesystem) {
-			fs = filesystem;
-		  }, errorHandler);
-	}
-	
-	chrome.extension.sendRequest({
-		url: window.URL.createObjectURL(new Blob([editor.getValue()])),
-		content: 'bladibla'
-	}, function() {
-		console.log(arguments);
-	});*
-	var href = window.URL.createObjectURL(new Blob([editor.getValue()]));
-	this.href = href;
-	//a.dataset.downloadurl = ['text/javascript', this.download, href].join(':');
-}, false);*/

@@ -14,8 +14,7 @@
 	},
 	"sandbox": {
 		"pages": [
-			"sandbox.html",
-			"devtools.html"
+			"sandbox.html"
 		]
 	},
 	"commands": {
