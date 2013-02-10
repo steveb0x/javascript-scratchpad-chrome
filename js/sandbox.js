@@ -27,11 +27,22 @@ var getConsoleMethod = function(method) {\
 	};\
 };\
 \
-var console = {\
-	log: getConsoleMethod('log'),\
-	time: getConsoleMethod('time'),\
-	timeEnd: getConsoleMethod('timeEnd')\
-};\
+var console = (function() {\
+	var time = getConsoleMethod('time'),\
+		timeEnd = getConsoleMethod('timeEnd'),\
+		times = {};\
+	return {\
+		log: getConsoleMethod('log'),\
+		debug: getConsoleMethod('debug'),\
+		time: function(name) {\
+			times[name || 'time'] = +new Date();\
+		},\
+		timeEnd: function(name) {\
+			name || (name = 'time');\
+			console.debug(name + ': ' + (+new Date() - times[name]) + 'ms');\
+		}\
+	};\
+})();\
 \
 var geval = eval;\
 self.onmessage = function(event) {\
