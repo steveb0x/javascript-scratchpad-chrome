@@ -5,7 +5,15 @@ var editor = CodeMirror.fromTextArea(document.getElementById('js'), {
 	lineWrapping: true,
 	indentUnit: 4,
 	indentWithTabs: true,
-	autofocus: true
+	autofocus: true,
+	onDragEvent: function(editor, evt) {
+		document.getElementsByClassName('CodeMirror-scroll')[0].classList.add('CodeMirror-focused');
+		var pos = editor.charCoords(editor.coordsChar({left: evt.clientX, top: evt.clientY}), 'local'),
+			cur = editor.display.otherCursor;
+		cur.style.display = '';
+		cur.style.top = pos.top + 'px';
+		cur.style.left = pos.left + 'px';
+	}
 });
 setTimeout(function() { editor.setSelection({line: editor.lineCount() - 1, ch: 0}); }, 100);
 
@@ -52,7 +60,7 @@ setTimeout(updateHints, 100);
 var linenumberRe = /CodeMirror-linenumber\b/;
 var startLine;
 editor.on('gutterClick', function(editor, n) {
-	editor.setSelection({line: n, ch: 0}, {line: n + 1, ch: 0});
+	editor.setSelection({line: n + 1, ch: 0}, {line: n, ch: 0});
 	startLine = n;
 	window.addEventListener('mousemove', selectLines, false);
 	window.addEventListener('mouseup', endSelectLines, false);
@@ -80,9 +88,9 @@ function selectLines(evt) {
 	}
 	
 	if(endLine > startLine) {
-		editor.setSelection({line: startLine, ch: 0}, {line: endLine, ch: 0});
+		editor.setSelection({line: endLine, ch: 0}, {line: startLine, ch: 0});
 	} else {
-		editor.setSelection({line: endLine - 1, ch: 0}, {line: startLine + 1, ch: 0});
+		editor.setSelection({line: startLine + 1, ch: 0}, {line: endLine - 1, ch: 0});
 	}
 }
 

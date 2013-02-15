@@ -1226,7 +1226,13 @@ window.CodeMirror = (function() {
     function p() {
       var changed = readInput(cm);
       if (!changed && !missed) {missed = true; cm.display.poll.set(60, p);}
-      else {cm.display.pollingFast = false; slowPoll(cm);}
+      else {
+		  if(cm.pollCallback) {
+			  cm.pollCallback();
+			  delete cm.pollCallback;
+		  }
+		  cm.display.pollingFast = false; slowPoll(cm);
+	  }
     }
     cm.display.poll.set(20, p);
   }
@@ -1848,9 +1854,9 @@ window.CodeMirror = (function() {
     if (this.options.electricChars && this.view.mode.electricChars &&
         this.options.smartIndent && !isReadOnly(this) &&
         this.view.mode.electricChars.indexOf(ch) > -1)
-      setTimeout(operation(cm, function() {indentLine(cm, cm.view.sel.to.line, "smart");}), 75);
+      cm.pollCallback = operation(cm, function() {indentLine(cm, cm.view.sel.to.line, "smart");});
     if (handleCharBinding(cm, e, ch)) return;
-    fastPoll(cm);
+	fastPoll(cm);
   }
 
   function onFocus(cm) {
