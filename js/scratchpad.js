@@ -288,24 +288,20 @@ function createButton(normalImg, hoverImg, click) {
 	};
 	btn.onclick = click;
 	buttons.appendChild(btn);
+	return btn;
 }
 
+var currentWindow = chrome.app.window.current();
 createButton('button_minimize.png', 'button_minimize_hover.png', function() {
-	chrome.app.window.current().minimize();
+	currentWindow.minimize();
 });
 function maximize() {
-	chrome.app.window.current().maximize();
-	this.src = this._normalSrc = 'img/button_restore.png';
-	this._hoverSrc = 'img/button_restore_hover.png';
-	this.onclick = restore;
+	currentWindow.maximize();
 }
 function restore() {
-	chrome.app.window.current().restore();
-	this.src = this._normalSrc = 'img/button_maximize.png';
-	this._hoverSrc = 'img/button_maximize_hover.png';
-	this.onclick = maximize;
+	currentWindow.restore();
 }
-createButton('button_maximize.png', 'button_maximize_hover.png', maximize);
+var maximizeBtn = createButton('button_maximize.png', 'button_maximize_hover.png', maximize);
 createButton('button_close.png', 'button_close_hover.png', function() {
 	if(isSaved) {
 		window.close();
@@ -316,4 +312,15 @@ createButton('button_close.png', 'button_close_hover.png', function() {
 			window.close();
 		}]);
 	}
+});
+
+currentWindow.onMaximized.addListener(function() {
+	maximizeBtn.src = maximizeBtn._normalSrc = 'img/button_restore.png';
+	maximizeBtn._hoverSrc = 'img/button_restore_hover.png';
+	maximizeBtn.onclick = restore;
+});
+currentWindow.onRestored.addListener(function() {
+	maximizeBtn.src = maximizeBtn._normalSrc = 'img/button_maximize.png';
+	maximizeBtn._hoverSrc = 'img/button_maximize_hover.png';
+	maximizeBtn.onclick = maximize;
 });
