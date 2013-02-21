@@ -39,7 +39,15 @@ function setUpWorker() {
 		}\
 	};\
 	self.onmessage = function(event) {\
-		self.eval(event.data);\
+		try {\
+			self.eval(event.data);\
+		} catch(e) {\
+			messages.push({\
+				cmd: 'console',\
+				method: 'error',\
+				args: [e.stack]\
+			});\
+		}\
 		setTimeout(function() {\
 			messages.push({\
 				cmd: 'done'\
