@@ -6,6 +6,12 @@ var editor = CodeMirror.fromTextArea(document.getElementById('js'), {
 	indentUnit: 4,
 	indentWithTabs: true,
 	autofocus: true,
+	undoDepth: 200,
+	matchBrackets: true,
+	highlightSelectionMatches: true,
+	extraKeys: {
+		'Enter': 'newlineAndIndentContinueComment'
+	},
 	onDragEvent: function(editor, evt) {
 		document.getElementsByClassName('CodeMirror-scroll')[0].classList.add('CodeMirror-focused');
 		var pos = editor.charCoords(editor.coordsChar({left: evt.clientX, top: evt.clientY}), 'local'),
@@ -214,6 +220,7 @@ var displayPath;
 
 function save(isSaveAs, close) {
 	if(fileEntry && !writable) {
+		// maybe not necessary? https://code.google.com/p/chromium/issues/detail?id=134067
 		chrome.fileSystem.getWritableEntry(fileEntry, function(entry) {
 			writable = true;
 			fileEntry = entry;

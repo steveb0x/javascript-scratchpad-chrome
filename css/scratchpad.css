@@ -34,8 +34,19 @@ html, body {
 	width:100%;
 	height:-webkit-calc(100% - 32px);
 }
+.CodeMirror-cursor {
+	z-index:100;
+}
 .CodeMirror-activeline-background {
 	background: #e8f2ff;
+}
+.CodeMirror-matchingbracket {
+	color:initial !important;
+}
+.CodeMirror-matchingbracket, .cm-matchhighlight {
+	border:1px solid #ccc;
+	border-radius:3px;
+	margin:-1px;
 }
 
 #sandbox {
