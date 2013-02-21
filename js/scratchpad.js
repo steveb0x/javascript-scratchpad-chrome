@@ -188,7 +188,6 @@ CodeMirror.commands.open = function() {
 		}],
 		acceptsAllTypes: false
 	}, function(entry) {
-		writable = false;
 		entry.file(function(file) {
 			chrome.fileSystem.getDisplayPath(entry, function(path) {
 				displayPath = path;
@@ -215,18 +214,10 @@ CodeMirror.commands.run = function() {
 };
 
 var fileEntry;
-var writable = false;
 var displayPath;
 
 function save(isSaveAs, close) {
-	if(fileEntry && !writable) {
-		// maybe not necessary? https://code.google.com/p/chromium/issues/detail?id=134067
-		chrome.fileSystem.getWritableEntry(fileEntry, function(entry) {
-			writable = true;
-			fileEntry = entry;
-			doSave(entry, false, close);
-		});
-	} else if(!fileEntry || isSaveAs) {
+	if(!fileEntry || isSaveAs) {
 		saveAs(close);
 	} else {
 		doSave(fileEntry, false, close);
@@ -238,11 +229,8 @@ function saveAs(close) {
 		type: 'saveFile',
 		suggestedName: 'scratchpad.js'
 	}, function(entry) {
-		chrome.fileSystem.getWritableEntry(entry, function(entry) {
-			writable = true;
-			fileEntry = entry;
-			doSave(fileEntry, true, close);
-		});
+		fileEntry = entry;
+		doSave(fileEntry, true, close);
 	});
 }
 
