@@ -188,6 +188,7 @@ CodeMirror.commands.saveAs = function() {
 };
 CodeMirror.commands.open = function() {
 	chrome.fileSystem.chooseEntry({
+		type: 'openWritableFile',
 		accepts: [{
 			mimeTypes: ['text/javascript', 'application/javascript'],
 			extensions: ['js']
