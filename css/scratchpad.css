@@ -49,6 +49,14 @@ html, body {
 	margin:-1px;
 }
 
+.jshint-error {
+	width:28px;
+}
+.jshint-error-line .CodeMirror-linenumber {
+	background-color:#FF5151;
+	color:white;
+}
+
 #sandbox {
 	display:none;
 }

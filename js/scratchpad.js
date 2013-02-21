@@ -19,21 +19,18 @@ var editor = CodeMirror.fromTextArea(document.getElementById('js'), {
 		cur.style.display = '';
 		cur.style.top = pos.top + 'px';
 		cur.style.left = pos.left + 'px';
-	}
+	},
+	gutters: ['jshint-errors', 'CodeMirror-linenumbers'],
+	fixedGutter: true
 });
 setTimeout(function() { editor.setSelection({line: editor.lineCount() - 1, ch: 0}); }, 100);
 
 var emptyRe = /^\s*$/;
 function updateHints() {
   editor.operation(function(){
-    [].forEach.call(document.querySelectorAll('.CodeMirror-linenumber'), function(linenumber) {
-		linenumber.style.backgroundColor = '';
-		linenumber.style.color = '';
-		linenumber.title = '';
-	});
-	
+	editor.clearGutter('jshint-errors');
+	var errorLines = [];
 	var val = editor.getValue();
-	
 	if(!emptyRe.test(val)) {
     	JSHINT(val);
 		var last;
@@ -42,17 +39,26 @@ function updateHints() {
 			if (!err) continue;
 			if(err.line + err.reason === last) continue;
 			last = err.line + err.reason; // JSHINT triggers a lot of errors when you type "/*"
-			var linenumber = document.querySelectorAll('.CodeMirror-linenumber')[err.line - 1];
-			linenumber.style.backgroundColor = '#FF5151';
-			linenumber.style.color = 'white';
-			linenumber.title += err.reason + '\n';
+			if(errorLines[err.line - 1]) {
+				errorLines[err.line - 1] += '\n' + err.reason;
+			} else {
+				errorLines[err.line - 1] = err.reason;
+			}
+		}
+		for(var i = 0, linecount = editor.lineCount(); i < linecount; i++) {
+			if(errorLines[i]) {
+				editor.addLineClass(i, 'wrap', 'jshint-error-line');
+				var elm = document.createElement('div');
+				elm.title = errorLines[i];
+				elm.className = 'jshint-error';
+				elm.innerHTML = '&nbsp;';
+				editor.setGutterMarker(i, 'jshint-errors', elm);
+			} else {
+				editor.removeLineClass(i, 'wrap', 'jshint-error-line');
+			}
 		}
 	}
   });
-  var info = editor.getScrollInfo();
-  var after = editor.charCoords({line: editor.getCursor().line + 1, ch: 0}, "local").top;
-  if (info.top + info.clientHeight < after)
-	window.scrollTo(null, after - info.clientHeight + 3);
 }
 
 var updateHintsTimeout;
