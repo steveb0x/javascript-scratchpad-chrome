@@ -306,7 +306,7 @@ function restore() {
 	currentWindow.restore();
 }
 function exit() {
-	if(isSaved) {
+	if(editor.isClean()) {
 		window.close();
 	} else {
 		editor.openConfirm("You haven't saved your work. <button>Save</button> <button>Close without saving</button> <button>Cancel</button>", [function() {
