@@ -271,12 +271,11 @@ function doSave(fileEntry, newPath, close) {
 	});
 }
 
-var isSaved = true;
 var title = document.getElementById('title');
 function updateTitle(saved) {
-	isSaved = saved;
+	if(saved) editor.markClean();
 	var path = displayPath || 'Scratchpad';
-	title.innerText = (saved ? '' : '*') + path;
+	title.innerText = (saved || editor.isClean() ? '' : '*') + path;
 }
 
 var buttons = document.getElementById('buttons');
