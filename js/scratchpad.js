@@ -197,20 +197,30 @@ CodeMirror.commands.open = function() {
 		}],
 		acceptsAllTypes: false
 	}, function(entry) {
-		entry.file(function(file) {
-			chrome.fileSystem.getDisplayPath(entry, function(path) {
-				displayPath = path;
-				updateTitle(true);
+		function open() {
+			entry.file(function(file) {
+				chrome.fileSystem.getDisplayPath(entry, function(path) {
+					displayPath = path;
+					updateTitle(true);
+				});
+				var reader = new FileReader();
+				reader.onloadend = function(e) {
+					editor.setValue(this.result);
+					updateTitle(true);
+					fileEntry = entry;
+				};
+				reader.readAsText(file);
+			}, function(err) {
+				console.log(err);
 			});
-			var reader = new FileReader();
-			reader.onloadend = function(e) {
-				editor.setValue(this.result);
-				fileEntry = entry;
-			};
-			reader.readAsText(file);
-		}, function(err) {
-			console.log(err);
-		});
+		}
+		if(editor.isClean()) {
+			open();
+		} else {
+			editor.openConfirm("You haven't saved your work. <button>Save</button> <button>Open anyway</button> <button>Cancel</button>", [function() {
+				save(false, open);
+			}, open]);
+		}
 	});
 };
 CodeMirror.commands['new'] = launchScratchpad;
@@ -226,25 +236,25 @@ CodeMirror.commands.exit = exit;
 var fileEntry;
 var displayPath;
 
-function save(isSaveAs, close) {
+function save(isSaveAs, callback) {
 	if(!fileEntry || isSaveAs) {
-		saveAs(close);
+		saveAs(callback);
 	} else {
-		doSave(fileEntry, false, close);
+		doSave(fileEntry, false, callback);
 	}
 }
 
-function saveAs(close) {
+function saveAs(callback) {
 	chrome.fileSystem.chooseEntry({
 		type: 'saveFile',
 		suggestedName: 'scratchpad.js'
 	}, function(entry) {
 		fileEntry = entry;
-		doSave(fileEntry, true, close);
+		doSave(fileEntry, true, callback);
 	});
 }
 
-function doSave(fileEntry, newPath, close) {
+function doSave(fileEntry, newPath, callback) {
 	fileEntry.createWriter(function(fileWriter) {
 		var val = editor.getValue();
 		fileWriter.onwriteend = function(e) {
@@ -257,8 +267,8 @@ function doSave(fileEntry, newPath, close) {
 				} else {
 					updateTitle(true);
 				}
-				if(close) {
-					window.close();
+				if(callback) {
+					callback();
 				}
 			};
 			fileWriter.truncate(val.length);
@@ -310,7 +320,9 @@ function exit() {
 		window.close();
 	} else {
 		editor.openConfirm("You haven't saved your work. <button>Save</button> <button>Close without saving</button> <button>Cancel</button>", [function() {
-			save(false, true);
+			save(false, function() {
+				window.close();
+			});
 		}, function() {
 			window.close();
 		}]);
