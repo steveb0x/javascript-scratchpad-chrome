@@ -233,6 +233,13 @@ CodeMirror.commands.run = function() {
 };
 CodeMirror.commands.exit = exit;
 
+window.addEventListener('keydown', function(evt) {
+	if(evt.ctrlKey || evt.altKey || evt.metaKey || CodeMirror.keyMap["default"][evt.keyIdentifier]) {
+		editor.triggerOnKeyDown(evt);
+		evt.stopPropagation();
+	}
+}, true);
+
 var fileEntry;
 var displayPath;
 
