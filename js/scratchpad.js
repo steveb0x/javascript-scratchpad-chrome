@@ -153,6 +153,7 @@ CodeMirror.keyMap.macDefault['Shift-F3'] = 'findPrev';
 CodeMirror.keyMap.macDefault['Cmd-G'] = 'goToLine';
 CodeMirror.keyMap.macDefault['Shift-Cmd-S'] = 'saveAs';
 CodeMirror.keyMap.macDefault['Cmd-O'] = 'open';
+CodeMirror.keyMap.macDefault['Cmd-R'] = 'run';
 CodeMirror.keyMap.macDefault['Cmd-W'] = 'exit';
 
 CodeMirror.commands.goToLine = function() {
