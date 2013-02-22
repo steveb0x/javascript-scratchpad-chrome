@@ -11,6 +11,11 @@
       dialog.className = "CodeMirror-dialog CodeMirror-dialog-top";
     }
     dialog.innerHTML = template;
+	CodeMirror.on(dialog, "keydown", function(evt) {
+		if(evt.ctrlKey || evt.altKey || evt.metaKey || CodeMirror.keyMap["default"][evt.keyIdentifier]) {
+			cm.triggerOnKeyDown(evt);
+		}
+	});
     return dialog;
   }
 
