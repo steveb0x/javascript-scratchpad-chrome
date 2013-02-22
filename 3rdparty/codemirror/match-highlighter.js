@@ -14,10 +14,12 @@
 (function() {
   var DEFAULT_MIN_CHARS = 2;
   var DEFAULT_TOKEN_STYLE = "matchhighlight";
+  var DEFAULT_SELECTED_TOKEN_STYLE = "selected-matchhighlight";
   
   function State(options) {
     this.minChars = typeof options == "object" && options.minChars || DEFAULT_MIN_CHARS;
     this.style = typeof options == "object" && options.style || DEFAULT_TOKEN_STYLE;
+    this.selectedStyle = typeof options == "object" && options.selectedStyle || DEFAULT_SELECTED_TOKEN_STYLE;
     this.overlay = null;
   }
 
@@ -46,11 +48,11 @@
 	  var selection = cm.getSelection().replace(/^\s+|\s+$/g, "");
       if (selection.length < state.minChars) return;
 
-      cm.addOverlay(state.overlay = makeOverlay(selection, state.style, cm.getCursor('start')));
+      cm.addOverlay(state.overlay = makeOverlay(selection, state.style, state.selectedStyle, cm.getCursor('start')));
     });
   }
 
-  function makeOverlay(query, style, cursor) {
+  function makeOverlay(query, style, selectedStyle, cursor) {
     var line = -1;
 	return {token: function(stream) {
       if(stream.sol()) line++;
@@ -64,7 +66,10 @@
 		  }
 	  }
 	  stream.eatWhile(/[\w\$_]/);
-	  if (stream.current() === query && (line !== cursor.line || stream.start !== cursor.ch)) return style;
+	  if (stream.current() === query) {
+		  if(line === cursor.line && stream.start === cursor.ch) return selectedStyle;
+		  return style;
+	  }
 	  stream.next();
       stream.skipTo(query.charAt(0)) || stream.skipToEnd();
     },

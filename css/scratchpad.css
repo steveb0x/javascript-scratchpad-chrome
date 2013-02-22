@@ -43,7 +43,7 @@ html, body {
 .CodeMirror-matchingbracket {
 	color:initial !important;
 }
-.CodeMirror-matchingbracket, .cm-matchhighlight {
+.CodeMirror-matchingbracket, .cm-matchhighlight:not(.cm-searching), .cm-searching.cm-selected-matchhighlight {
 	border:1px solid #ccc;
 	border-radius:3px;
 	margin:-1px;
